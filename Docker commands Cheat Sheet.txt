@@ -1,0 +1,121 @@
+Docker Installation Process
+---------------------------
+
+sudo yum install docker 
+
+docker --version 
+
+docker info
+
+docker --help
+
+sudo service docker start/restart/stop
+
+sudo usermod -a -G docker ec2-user -----> Make Docker Not Require sudo Anymore
+
+docker system prune -----> Remove all stopped containers,all dangling images, and all unused networks
+
+docker images -a -----> List Docker Images on Computer
+
+docker ps -a  ((or)) docker container ls -a  -----> List Currently Running Docker Containers
+
+docker start <CONTAINER ID HERE> -----> Start Docker Container
+
+docker stop <CONTAINER ID HERE> -----> Stop Running Docker Container
+
+docker rm $(docker ps -a -q) -----> Remove all stopped containers
+
+docker rm <CONTAINER ID HERE> -----> Delete Docker Container
+
+docker rm $(docker ps -a -f status=exited -q) -----> Remove all exited containers
+
+docker ps -a -f status=exited -f status=created ((or)) docker rm $(docker ps -a -f status=exited -f status=created -q) -----> Remove containers using more than one filter
+
+docker rmi <IMAGE ID HERE> or docker rmi -f <IMAGE ID HERE> -----> Remove Docker Image
+
+docker rmi $(docker images -f dangling=true)  -----> Remove dangling inages(untaged images) using the -f filter flag
+
+docker images -f dangling=true -----> List dangling images (untagged images) using the -f filter flag
+
+docker rmi $(docker images -a -q) -----> Remove all images at a time
+
+docker container prune --filter "until=12h"  -----> Remove containers based on condition using the filtering flag --filter.
+
+docker image prune -a --filter "until=12h" -----> Remove images based on a certain condition using the filtering flag --filter /interactively remove dangling images
+
+docker images -f dangling=true ((or)) docker image prune -a  -----> Remove dangled and unused images
+
+docker image prune -a -----> Remove all unused images 
+
+docker stop $(docker ps -a -q) -----> Stop all containers
+
+docker rm $(docker ps -a -q) -----> Remove all containers
+
+docker build --tag=<IMAGE TAG NAME> --force-rm=true . -----> Build Docker Image
+
+docker run -d <IMAGE NAME> -----> Run Docker Image in Docker Container
+
+docker logs <CONTAINER ID HERE> -----> Check Docker Container Logs
+
+docker inspect <CONTAINER ID HERE> -----> Inspect Docker Container
+
+docker exec -it <CONTAINER ID HERE> ls/bash -----> Execute Commands in Docker Container
+
+docker volume rm volume_name volume_name -----> Remove one or more specific volumes - Docker 1.9 and later
+
+docker run <CONTAINER ID> -e "<ENVIRONMENT VARIABLE NAME>=<VALUE>" -----> Pass Environment Variables
+EX: docker run ceaf9e1ebef5 -e "SPRING_PROFILES_ACTIVE=dev" -e "server.port=8080"
+
+
+docker run -d -p 3306:3306 --name mysql-docker-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=polling_app 
+-e MYSQL_USER=devoxx -e MYSQL_PASSWORD=welcome_123! -v /var/lib/mysql:/var/lib/mysql mysql:latest  --With Docker Volume
+
+
+docker run -d -p 3306:3306 --name mysql-docker-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=polling_app 
+-e MYSQL_USER=devoxx -e MYSQL_PASSWORD=welcome_123! mysql:latest  -- Without Docker Volume
+
+
+Publish Docker Image to Docker Hub
+-----------------------------------
+docker login --username=<Docker Hub Username>
+
+password:<Docker Hub Password>
+
+docker tag <Image ID> <Docker Hub Username>/<Repository Name>
+
+docker push <Docker Hub Username>/<Repository Name> ((or)) <Repository Name>
+
+
+Docker Volumes
+---------------
+docker volume ls -----> Display list of volumes
+
+docker volume prune -----> Remove all unused volumes
+
+docker volume rm <volume name>  -----> Remove volume name
+
+ docker volume rm $(docker volume ls  -q --filter dangling=true)  -----> Remove dangling(untaged) volumes
+
+Docker Networking
+-----------------
+docker network ls -----> Display list of networks
+
+docker network rm <NETWORD ID> -----> Remove network based on ID
+
+docker network prune -----> Remove all unused network
+
+docker network prune -a --filter "until=12h"  -----> Remove networks using filters 
+
+docker network ls | grep "bridge"    -----> patterns
+
+docker network create --driver bridge <NEW NETWORK NAME> -----> Create Custom Docker Bridge Network
+
+docker run <CONTAINER ID > --network <NAME OF CREATED NETWORK> ----->  run Docker container in a newly created custom bridge network
+
+docker create devoxx-network ---> Create a custome Docker network 
+
+docker run -d --network devoxx-network --name devoxx(host) -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATADBASE=database mysql:latest
+
+
+
+
